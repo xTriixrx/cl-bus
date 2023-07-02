@@ -12,6 +12,15 @@
 
 (in-package :rb/tests)
 
+(deftest test-ring-type
+  (testing "Testing ring buffer is of type ring-buffer."
+    (let ((rbuffer nil))
+      (ok (not (typep rbuffer 'rb::ring-buffer))
+          "Ensure initially not a ring-buffer type.")
+      (setf rbuffer (rb::make-rb 1))
+      (ok (typep rbuffer 'rb::ring-buffer)
+          "Ensure after intiialization is now ring-buffer type."))))
+
 (deftest test-ring-empty
   (testing "Testing ring buffer rb-empty-p predicate works as expected."
     (let ((ring-buffer (rb::make-rb 2)))
@@ -53,11 +62,16 @@
   (testing "Testing ring buffer read and writes are in expected order."
     (let ((read-val nil)
           (val "Hello World")
-          (ring-buffer (rb::make-rb 10)))
+          (ring-buffer (rb::make-rb 3)))
       ;; Write different data into ring buffer
-      (rb::rb-write ring-buffer (format nil val))
-      (rb::rb-write ring-buffer 1)
-      (rb::rb-write ring-buffer 'A)
+      (ok (rb::rb-write ring-buffer (format nil val))
+          "Ensure write to buffer is successful.")
+      (ok (rb::rb-write ring-buffer 1)
+          "Ensure write to buffer is successful.")
+      (ok (rb::rb-write ring-buffer 'A)
+          "Ensure write to buffer is successful.")
+      (ok (not (rb::rb-write ring-buffer 1))
+          "Ensure write to full buffer is unsuccessful.")
       ;; Read value and ensure it matches what was expected
       (setf read-val (rb::rb-read ring-buffer))
       (ok (equal read-val val) "Ensure read value matches written value.")
