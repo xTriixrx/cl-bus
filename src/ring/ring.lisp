@@ -69,10 +69,11 @@
     (and (eql head tail) full-p)))
 
 (defmethod rb-reset ((ring ring-buffer))
-  (with-slots (buffer capacity head tail) ring
+  (with-slots (buffer capacity head tail full-p) ring
     (setf buffer (make-array capacity :initial-element nil))
     (setf head 0)
-    (setf tail 0)) t)
+    (setf tail 0)
+    (setf full-p nil)) t)
 
 ;; Class method for printing slots from ring buffer class instance
 (defmethod rb-print ((ring ring-buffer))

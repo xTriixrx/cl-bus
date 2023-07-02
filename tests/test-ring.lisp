@@ -39,6 +39,16 @@
       (ok (not (rb::rb-full-p ring-buffer))
           "Ensure ring buffer is no longer full after a read."))))
 
+(deftest test-ring-reset
+  (testing "Testing ring buffer reset empties out entire buffer."
+    (let ((ring-buffer (rb::make-rb 2)))
+      ;; Write data into buffer
+      (rb::rb-write ring-buffer 1)
+      (rb::rb-write ring-buffer 2)
+      (ok (rb::rb-full-p ring-buffer) "Ensure ring buffer is full.")
+      (rb::rb-reset ring-buffer)
+      (ok (rb::rb-empty-p ring-buffer) "Ensure ring buffer is now empty after reset."))))
+
 (deftest test-ring-read-write
   (testing "Testing ring buffer read and writes are in expected order."
     (let ((read-val nil)
