@@ -34,6 +34,21 @@
      :capacity *rb-default-capacity*
      :buffer (make-array *rb-default-capacity* :initial-element nil))))
 
+(defmethod rb-full-p ((ring ring-buffer))
+  (with-slots (head tail full-p) ring
+    (and (eql head tail) full-p)))
+
+(defmethod rb-empty-p ((ring ring-buffer))
+  (with-slots (head tail) ring
+    (and (eql head tail) (not (rb-full-p ring)))))
+
+(defmethod rb-reset ((ring ring-buffer))
+  (with-slots (buffer capacity head tail full-p) ring
+    (setf buffer (make-array capacity :initial-element nil))
+    (setf head 0)
+    (setf tail 0)
+    (setf full-p nil)) t)
+
 ;; Class method for writing data to ring buffer
 (defmethod rb-write ((ring ring-buffer) data)
   (with-slots (buffer capacity head tail full-p) ring
@@ -59,21 +74,6 @@
        ;; Update tail index
        (setf tail (mod (+ 1 tail) capacity)))))
     data))
-
-(defmethod rb-empty-p ((ring ring-buffer))
-  (with-slots (head tail) ring
-    (and (eql head tail) (not (rb-full-p ring)))))
-
-(defmethod rb-full-p ((ring ring-buffer))
-  (with-slots (head tail full-p) ring
-    (and (eql head tail) full-p)))
-
-(defmethod rb-reset ((ring ring-buffer))
-  (with-slots (buffer capacity head tail full-p) ring
-    (setf buffer (make-array capacity :initial-element nil))
-    (setf head 0)
-    (setf tail 0)
-    (setf full-p nil)) t)
 
 ;; Class method for printing slots from ring buffer class instance
 (defmethod rb-print ((ring ring-buffer))
